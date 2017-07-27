@@ -2,17 +2,37 @@ var express = require("express");
 var fs = require("fs");
 var nunjucks = require("nunjucks");
 var app = express();
-var dateFilter = require('nunjucks-date-filter');
+//var dateFilter = require('nunjucks-date-filter');
 var env = nunjucks.configure('views', {
     autoescape: true,
     express: app,
     watch: true,
     noCache: false
 });
-env.addFilter('date', dateFilter);
+//env.addFilter('date', dateFilter);
+
+var nav = [ 
+        {
+            title: "Menu1",
+            link: "/"
+        },
+        {
+            title: "Menu2",
+            link: "/generic"
+        },
+        {
+            title: "Menu3",
+            link: "/elements"
+        }
+    ] 
+
+    var params ={
+        nav: nav
+    }
 
 // Set up a URL route
 app.get("/", function(req, res) {
+
     var news = [
         {
             title: "Noticia 1",
@@ -51,15 +71,21 @@ app.get("/", function(req, res) {
             intro: "Esta es la intro de la noticia 6"
         }
     ]
-    res.render("layouts/index.html", { news : news });
+
+    params.noticias = news 
+    params.currentUrl =  req.originalUrl
+
+    res.render("layouts/index.html", params);
 });
 
 app.get("/generic", function(req, res) {
-    res.render("layouts/generic.html");
+    params.currentUrl =  req.originalUrl
+    res.render("layouts/generic.html", params);
 });
 
 app.get("/elements", function(req, res) {
-    res.render("layouts/elements.html");
+    params.currentUrl =  req.originalUrl    
+    res.render("layouts/elements.html", params );
 });
 
 // bind the app to listen for connections on a specified port
